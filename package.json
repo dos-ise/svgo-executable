@@ -3,6 +3,9 @@
   "version": "2.8.0",
   "description": "Wrapper under SVGO to run it without installed node.exe on computer",
   "main": "index.js",
+  "bin": {
+    "svgo": "./node_modules/svgo/bin/svgo"
+  },
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1"
   },
