@@ -5,28 +5,40 @@ on:
     tags:
     - '*'
 
+# Allows you to run this workflow manually from the Actions tab
+workflow_dispatch:
+
 jobs:
   release:
     runs-on: ubuntu-latest
     steps:
+      # Checks out your repository
       - uses: actions/checkout@v2
 
+      # Sets up Node.js environment
       - name: Setup Node.js environment
         uses: actions/setup-node@v2.5.1
-        
-      - name: npm install
+        with:
+          node-version: '14' # Ensure Node.js 14 is used for compatibility
+
+      # Installs dependencies
+      - name: Install dependencies
         run: npm install
 
-      - name: build executables
-        run: npx pkg node_modules/svgo
+      # Builds executables for multiple targets (including x86)
+      - name: Build executables
+        run: |
+          npx pkg . --targets node14-win-x64,node14-win-x86,node14-linux-x64,node14-macos-x64
 
-      - name: Zip svgo-win.exe
-        run: zip svgo-win.exe.zip svgo-win.exe -r
+      # Zips the Windows x64 and x86 executables
+      - name: Zip Windows executables
+        run: |
+          zip svgo-win-x64.exe.zip svgo-win-x64.exe
+          zip svgo-win-x86.exe.zip svgo-win-x86.exe
 
+      # Prepares release artifacts
       - uses: ncipollo/release-action@v1
         with:
-          artifacts: "svgo-win.exe.zip,svgo-win.exe,svgo-linux,svgo-macos"
+          artifacts: "svgo-win-x64.exe.zip,svgo-win-x86.exe.zip,svgo-linux,svgo-macos"
           bodyFile: "README.md"
           token: ${{ secrets.GITHUB_TOKEN }}
-        
-        
